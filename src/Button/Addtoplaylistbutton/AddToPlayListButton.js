@@ -9,7 +9,7 @@ export const AddToPlaylistButton = ({ movie }) => {
 
   useEffect(() => {
     // Suponiendo que tienes una API para obtener todas las listas de reproducción
-    axios.get('https://tu-api.com/playlists')
+    axios.get('/playlist/playlists')
       .then(response => {
         setPlaylists(response.data);
       })
@@ -20,8 +20,8 @@ export const AddToPlaylistButton = ({ movie }) => {
 
   const handleAddToPlaylist = (playlist) => {
     // Aquí tendrías que llamar a tu API para añadir la película a la lista de reproducción seleccionada
-    axios.put(`https://tu-api.com/playlists/${playlist.id}`, {
-      movies: [...playlist.movies, movie.id]
+    axios.post(`/playlist/${playlist.id}/movies`, {
+      movieId: movie.id
     })
       .then(response => {
         console.log('Película añadida a la lista de reproducción');
@@ -34,7 +34,7 @@ export const AddToPlaylistButton = ({ movie }) => {
   const handleCreatePlaylist = (e) => {
     e.preventDefault();
     // Aquí tendrías que llamar a tu API para crear una nueva lista de reproducción
-    axios.post(`https://tu-api.com/playlists`, {
+    axios.post(`/playlist/create`, {
       name: newPlaylistName,
       movies: [movie.id]
     })
@@ -49,7 +49,7 @@ export const AddToPlaylistButton = ({ movie }) => {
 
   return (
     <div>
-      <button onClick={() => setShowPlaylists(!showPlaylists)}>
+      <button type='button' onClick={() => setShowPlaylists(!showPlaylists)}>
         Añadir a lista de reproducción
       </button>
       {showPlaylists && (

@@ -1,16 +1,31 @@
-import React from 'react';
-import { MovieDetail } from '../MovieDetail/MovieDetail';
+import React, { useState}  from 'react';
+//import { MovieDetail } from '../MovieDetail/MovieDetail';
 import './playlist.css';
+import { Movie } from '../Movie/Movie';
+import { useNavigate } from 'react-router-dom';
 
 export const Playlist = ({ playlist }) => {
-  const { name, movies } = playlist; 
+  const { movies } = playlist; 
+  const [showDetails, setShowDetails] = useState(false);
+  const navigate = useNavigate();
 
+  console.log(playlist)
+  const handleClick = () => {
+    setShowDetails(!showDetails);
+  }
+  const handleEditPlaylist = (id) => {
+    navigate(`/edit-playlist/${id}`);
+  }
   return (
     <div>
-      <h2>{name}</h2>
+      <button onClick={handleClick}>Detalles</button>
+      {showDetails ? <div>
       {movies.map(movie => (
-        <MovieDetail key={movie.id} movie={movie} />
+        <Movie key={movie.id} movie={movie} />
       ))}
+      <button onClick={()=>handleEditPlaylist(playlist.id)}>Editar Lista de Reproducción</button>
+      </div>
+      : null} 
     </div>
   );
 }
