@@ -12,6 +12,10 @@ export const Dashboard = () => {
     navigate('/new-playlist')
   }
 
+  const handleLogOut = () => {
+    navigate('/login')
+  }
+
   useEffect(() => {
     // Actualiza la URL con tu punto de acceso a la API
     axios.get('/playlist/playlists') 
@@ -26,7 +30,10 @@ export const Dashboard = () => {
   return (
     <div className="dashboard-container">
       <h1>Mis Listas de Reproducción</h1>
-      <button onClick={handleClick}>Nueva Playlist</button>
+      <div className="button-container">
+        <button onClick={handleClick}>Nueva Playlist</button>
+        <button onClick={handleLogOut}>Salir</button>
+      </div>
       <div className="playlists">
         {playlists.map(playlist => (
           <div className="playlist-container" key={playlist.id}>

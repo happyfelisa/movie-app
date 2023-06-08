@@ -4,6 +4,11 @@
     padding: 30px 0;
   }
   
+  .button-container {
+    display: flex;
+    justify-content: space-between;
+  }
+
   .dashboard-container h1 {
     text-align: center;
     color: #333;

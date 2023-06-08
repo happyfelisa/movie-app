@@ -2,7 +2,6 @@ import React, { useState} from 'react';
 import './movie.css'
 import '../MovieDetail/moviedetail.css'
 import axios from 'axios';
-import { AddToPlaylistButton } from '../Button/Addtoplaylistbutton/AddToPlayListButton';
 
 export const Movie = ({ movie }) => {
   const { title,posterPath } = movie;

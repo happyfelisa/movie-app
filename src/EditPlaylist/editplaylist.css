@@ -13,6 +13,11 @@
   max-width: 500px;
 }
 
+.edit-playlist-container form li{
+  display: flex;
+  flex-direction:row ;
+}
+
 .edit-playlist-container form label {
   font-weight: bold;
   margin-bottom: 10px;
