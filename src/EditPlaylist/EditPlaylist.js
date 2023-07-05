@@ -55,10 +55,10 @@ export const EditPlaylist = ({ match }) => {
   };
 
   const confirmAddMovie = () => {
-    const movieAdded = Object.values(movieDetails).find(movie =>{
+    const movieAdded = Object.values(movieDetails).find(movie => {
       return movie.id === addCandidate;
     });
-    setMovies([ ...movies,movieAdded ]);
+    setMovies([...movies, movieAdded]);
     setMovieDetails(prevDetails => {
       const newDetails = { ...prevDetails };
       delete newDetails[removalCandidate];
@@ -68,7 +68,7 @@ export const EditPlaylist = ({ match }) => {
   };
 
   const confirmRemoveMovie = () => {
-    setMovies(movies.filter(movie=> movie.id !== removalCandidate));
+    setMovies(movies.filter(movie => movie.id !== removalCandidate));
     setMovieDetails(prevDetails => {
       const newDetails = { ...prevDetails };
       delete newDetails[removalCandidate];
@@ -90,7 +90,7 @@ export const EditPlaylist = ({ match }) => {
 
     axios.put(`/playlist/${params.id}`, {
       name: name,
-      movies:movies.map(movie => movie.id)
+      movies: movies.map(movie => movie.id)
     })
       .then(response => {
         setPlaylist(response.data);
@@ -101,56 +101,69 @@ export const EditPlaylist = ({ match }) => {
       });
   };
 
+  const handleDeletePlaylist = () => {
+    axios.delete(`/playlist/${params.id}`)
+      .then(() => {
+        navigate('/dashboard');
+      })
+      .catch(error => {
+        console.error('Hubo un error al eliminar la lista de reproducción:', error);
+      });
+  };
+
   if (!playlist) {
     return <p>Cargando lista de reproducción...</p>;
   }
-  
+
   return (
     <div className="edit-playlist-container">
-      <h2>Editar lista de reproducción</h2>
-      <form onSubmit={handleUpdatePlaylist}>
-        <label>
-          Nombre:
-          <input type="text" value={name} onChange={handleNameChange} />
-        </label>
-        <h3>Películas en la lista:</h3>
-        <ul>
-          {movies.map(movie => (
-            <li key={movie.id}>
-              <button type="button"  onClick={() => handleRemoveMovie(movie.id)}>Eliminar de la lista</button>
-              {removalCandidate === movie.id && (
-                <div>
-                  <p>¿Estás seguro de que quieres eliminar esta película de la lista?</p>
-                  <button type="button" onClick={confirmRemoveMovie}>Sí</button>
-                  <button type="button"  onClick={cancelRemoveMovie}>No</button>
-                </div>
-              )}
-              <p>{movie.id} - {movieDetails[movie.id] ? movieDetails[movie.id].title : 'Cargando...'}</p>
-            </li>
-          ))}
-        </ul>
+    <h2>Editar lista de reproducción</h2>
+    <form onSubmit={handleUpdatePlaylist}>
+    <label>
+      Nombre:
+      <input type="text" value={name} onChange={handleNameChange} />
+    </label>
+    <h3>Películas en la lista:</h3>
+      <ul>
+      {movies.map(movie => (
+        <li key={movie.id}>
+        <p>{movie.id} - {movieDetails[movie.id] ? movieDetails[movie.id].title : 'Cargando...'}</p>
+        <button type="button" onClick={() => handleRemoveMovie(movie.id)}>Eliminar de la lista</button>
+        {removalCandidate === movie.id && (
+          <div>
+           <p>¿Estás seguro de que quieres eliminar esta película de la lista?</p>
+          <button type="button" onClick={confirmRemoveMovie}>Sí</button>
+          <button type="button" onClick={cancelRemoveMovie}>No</button>
+          </div>
+          )}
+        </li>
+        ))}
+      </ul>
         <button type="button" onClick={handleMovieList}>Agregar Peliculas</button>
-        {showMovies? <div>
-          <ul>
-            {Object.values(movieDetails).map(movie => (
-              <li key={movie.id}>
-               {/* <AddToPlaylistButton movie={movie} /> */}
-               <button type="button" onClick={() => handleAddMovie(movie.id)}>add</button>
-                {addCandidate === movie.id && (
-                  <div>
-                    <p>¿Estás seguro de que quieres agregar esta película a la lista?</p>
-                    <button type="button" onClick={confirmAddMovie}>Sí</button>
-                    <button type="button"  onClick={cancelAddMovie}>No</button>
-                  </div>
-                )}
-                <p>{movie.id} - {movie.title}</p>           
-              </li>
-            ))}
-          </ul>
-        </div> : null}
-        <button type="submit">Guardar cambios</button>
-      </form>
+        {showMovies ? (
+        <div>
+      <ul>
+      {Object.values(movieDetails).map(movie => (
+      <li key={movie.id}>
+         <p>{movie.id} - {movie.title}</p>
+          <button type="button" onClick={() => handleAddMovie(movie.id)}>add</button>
+          {addCandidate === movie.id && (
+         <div>
+           <p>¿Estás seguro de que quieres agregar esta película a la lista?</p>
+           <button type="button" onClick={confirmAddMovie}>Sí</button>
+           <button type="button" onClick={cancelAddMovie}>No</button>
+         </div>
+         )}
+      </li>
+      ))}
+    </ul>
+       </div>
+       ) : null}
+      <div className="button-container">
+       <button type="submit">Guardar cambios</button>
+       <button className="delete-button" onClick={handleDeletePlaylist}>Eliminar lista de reproducción</button>
+      </div>
+    </form>
     </div>
   );
 }
-

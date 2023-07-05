@@ -17,14 +17,15 @@ export const Playlist = ({ playlist }) => {
     navigate(`/edit-playlist/${id}`);
   }
   return (
-    <div>
-      <button onClick={handleClick}>Detalles</button>
-      {showDetails ? <div>
-      {movies.map(movie => (
-        <Movie key={movie.id} movie={movie} />
-      ))}
-      <button onClick={()=>handleEditPlaylist(playlist.id)}>Editar Lista de Reproducción</button>
-      </div>
+    <div className="playlist-container">
+      <button className="button_d"  onClick={handleClick}>Detalles</button>
+      {showDetails ? 
+        <div className="movies-wrapper">
+          {movies.map(movie => (
+            <Movie key={movie.id} movie={movie} />
+          ))}
+          <button className="button" onClick={()=>handleEditPlaylist(playlist.id)}>Editar Lista de Reproducción</button>
+        </div>
       : null} 
     </div>
   );
