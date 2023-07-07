@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './login.css';
-import { useQuery, gql } from "@apollo/client";
+import { useLazyQuery, gql } from "@apollo/client";
 
 
 const USER_QUERY = gql`
-  query{
-    userm(id: 1) {
-      id
+  query login($username: String!, $password: String!){
+    login(loginInput: { username: $username, password: $password}){
       username
     }
   }
@@ -21,6 +20,7 @@ export const Login = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
+    /*
     event.preventDefault();
     try {
       const response = await axios.post('/auth/login', {
@@ -35,16 +35,23 @@ export const Login = () => {
       }
     } catch (error) {
       setError('Usuario no válido');
-    }
+    }*/
   };
-
-  const {data} = useQuery(USER_QUERY);
-  console.log(data.userm.username);
+  const [login,{data}] = useLazyQuery(USER_QUERY);
 
   return (
     <div className="login-container">
       <h2>Iniciar sesión</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={(e) =>{
+        e.preventDefault();
+        login({ variables: { 
+          username: email,
+          password: password,
+        }})
+        if (data) {
+          navigate('/dashboard');
+        }
+      }}>
         <label>
           Correo electrónico:
           <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
