@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import './editplaylist.css';
-import { useQuery, gql } from "@apollo/client";
+import { useQuery, gql, useMutation } from "@apollo/client";
 
 export const EditPlaylist = ({ match }) => {
   const params = useParams();
@@ -136,10 +136,42 @@ export const EditPlaylist = ({ match }) => {
     setAddCandidate(null);
   };
 
+  const UPDATE_PLAYLIST_QUERY = gql`
+  mutation updatePlaylist($id: Float!, $name: String!, $movies: [Float!]!){
+    updatePlaylist(updatePlaylistInput: {id: $id, name: $name, movies:$movies}){
+      id
+      name
+      movies{
+        id
+        title
+        overview
+        posterPath
+      }
+    }
+  }
+  `;
+
+  const [updatePlaylist] = useMutation(UPDATE_PLAYLIST_QUERY,{
+    refetchQueries: [
+      { query: PLAYLIST_DETAIL_QUERY },
+    ]
+  });
+  
+  const DELETE_PLAYLIST_QUERY = gql`
+  mutation removePlaylist($id: Float!){
+    removePlaylist(id: $id) {
+      name
+    }
+  }
+  `;
+
+  const [deletePlaylist] = useMutation(DELETE_PLAYLIST_QUERY);
+
+
   const handleUpdatePlaylist = (event) => {
     event.preventDefault();
 
-    axios.put(`/playlist/${params.id}`, {
+    /*axios.put(`/playlist/${params.id}`, {
       name: name,
       movies: movies.map(movie => movie.id)
     })
@@ -149,17 +181,18 @@ export const EditPlaylist = ({ match }) => {
       })
       .catch(error => {
         console.error('Hubo un error al actualizar la lista de reproducción:', error);
-      });
+      });*/
+    
   };
 
   const handleDeletePlaylist = () => {
-    axios.delete(`/playlist/${params.id}`)
+    /*axios.delete(`/playlist/${params.id}`)
       .then(() => {
         navigate('/dashboard');
       })
       .catch(error => {
         console.error('Hubo un error al eliminar la lista de reproducción:', error);
-      });
+      });*/
   };
 
   if (!playlist) {
@@ -180,7 +213,17 @@ export const EditPlaylist = ({ match }) => {
   return (
     <div className="edit-playlist-container">
     <h2>Editar lista de reproducción</h2>
-    <form onSubmit={handleUpdatePlaylist}>
+    <form onSubmit={(e) => {
+      e.preventDefault();
+      updatePlaylist({
+        variables: {
+          id: +params.id,
+          name: name,
+          movies: movies.map(movie => +movie.id),
+        }
+      });
+      navigate('/dashboard');
+    }}>
     <label>
       Nombre:
       <input type="text" value={name} onChange={handleNameChange} />
@@ -223,7 +266,13 @@ export const EditPlaylist = ({ match }) => {
        ) : null}
       <div className="button-container">
        <button type="submit">Guardar cambios</button>
-       <button className="delete-button" onClick={handleDeletePlaylist}>Eliminar lista de reproducción</button>
+       <button className="delete-button" onClick={() =>{
+          deletePlaylist({
+            id: +params.id,
+          })
+          navigate('/dashboard');
+       }
+       }>Eliminar lista de reproducción</button>
       </div>
     </form>
     </div>
