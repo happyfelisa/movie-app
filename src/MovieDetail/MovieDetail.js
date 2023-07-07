@@ -3,27 +3,49 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { AddToPlaylistButton } from '../Button/Addtoplaylistbutton/AddToPlayListButton';
 import './moviedetail.css';
+import { useQuery, gql } from "@apollo/client";
+
 
 export const MovieDetail = () => {
   const { id } = useParams();
+  const MOVIE_QUERY = gql`
+  query{
+    movie(id:${id}){
+      id
+      title
+      overview
+      posterPath
+      actors{
+        name
+      }
+    }
+  }
+  `;
+  const { data } = useQuery(MOVIE_QUERY);
+  console.log(data)
   const [movieDetails, setMovieDetails] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchMovieDetails = async () => {
       try {
-        const response = await axios.get(`/movies/${id}`);
-        setMovieDetails(response.data);
+        //const response = await axios.get(`/movies/${id}`);
+        //setMovieDetails(response.data);
+        if(data){
+          setMovieDetails(data.movie)
+        }
       } catch (error) {
         setError(error.message);
       }
     };
 
     fetchMovieDetails();
-  }, [id]);
+  }, [data]);
+
+  console.log(movieDetails);
 
   return (
-    <div className="movie-detail-container">
+    <div>
       {error ? (
         <p>Error al cargar los detalles de la película.</p>
       ) : movieDetails ? (
@@ -34,14 +56,14 @@ export const MovieDetail = () => {
               <img src={`https://image.tmdb.org/t/p/w185/${movieDetails.posterPath}`} alt={movieDetails.title} />
             </div>
             <div className="movie-description">
+              <h4>Plot:</h4>
               <p>{movieDetails.overview}</p>
-              <h4>Elenco:</h4>
+              <h4>Cast:</h4>
               <ul>
                 {movieDetails.actors.map((actor, index) => (
                   <li key={index}>{actor.name}</li>
                 ))}
               </ul>
-              <AddToPlaylistButton  movie={movieDetails} />
             </div>
           </div>
         </div>

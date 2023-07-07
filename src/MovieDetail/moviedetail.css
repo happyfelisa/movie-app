@@ -1,12 +1,9 @@
-.movie-detail-container {
-  justify-content: center;
-  align-items: center;
-}
-
 .movie-detail-content {
   align-items: center;
-  margin-top: 20px;
-  width: 200px;
+  margin: 20px;
+  padding: 20px;
+  border: #006600 2px solid;
+  border-radius: 5px;
 }
 
 .movie-title {
@@ -36,9 +33,17 @@
 
 .movie-description {
   flex: 1 1 auto;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+}
+
+.movie-description ul {
+  list-style-type: "\1F3AD";
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.movie-description ul li {
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 

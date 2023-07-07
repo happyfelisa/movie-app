@@ -2,9 +2,37 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import './editplaylist.css';
+import { useQuery, gql } from "@apollo/client";
 
 export const EditPlaylist = ({ match }) => {
   const params = useParams();
+  const PLAYLIST_DETAIL_QUERY = gql`
+  query{
+    playlist(id:${params.id}){
+      id
+      name
+      movies{
+        id
+        title
+        overview
+        posterPath
+      }
+    }
+  }
+  `;
+  const playlistData = useQuery(PLAYLIST_DETAIL_QUERY)
+  const MOVIES_QUERY = gql`
+  query{
+    movies{
+      id
+      title
+      overview
+      posterPath
+    }
+  }
+  `;
+  const moviesData = useQuery(MOVIES_QUERY);
+  console.log(moviesData.data)
   const navigate = useNavigate();
   const [playlist, setPlaylist] = useState(null);
   const [name, setName] = useState('');
@@ -15,7 +43,7 @@ export const EditPlaylist = ({ match }) => {
   const [addCandidate, setAddCandidate] = useState(null);
 
   useEffect(() => {
-    axios.get(`/playlist/${params.id}`)
+    /*axios.get(`/playlist/${params.id}`)
       .then(response => {
         setPlaylist(response.data);
         setName(response.data.name);
@@ -35,8 +63,31 @@ export const EditPlaylist = ({ match }) => {
       })
       .catch(error => {
         console.error('Hubo un error al obtener la lista de reproducción:', error);
-      });
-  }, [params.id]);
+      });*/
+      try {
+        if(playlistData) {
+          setPlaylist(playlistData.data.playlist);
+          setName(playlistData.data.playlist.name);
+          setMovies(playlistData.data.playlist.movies);   
+        }
+        try {
+          if(moviesData) {
+            const details = {};
+            moviesData.data.movies.forEach(movie => {
+              if(true){
+                details[movie.id] = movie;
+              }
+              
+            });
+            setMovieDetails(details);  
+          }
+        } catch (error) {
+          console.log(error.message)
+        }
+      } catch (error) {
+        console.log(error.message)
+      }
+  }, [playlistData,moviesData]);
 
   const handleNameChange = (event) => {
     setName(event.target.value);
@@ -115,6 +166,17 @@ export const EditPlaylist = ({ match }) => {
     return <p>Cargando lista de reproducción...</p>;
   }
 
+  let filtered = {};
+  if(playlistData && moviesData){
+    filtered = moviesData.data.movies.filter((movie) => 
+      !playlistData.data.playlist.movies.some((mov) => mov.id === movie.id)
+    );
+    console.log('FILTRADOS',filtered)
+  }
+
+  
+  console.log(movieDetails)
+
   return (
     <div className="edit-playlist-container">
     <h2>Editar lista de reproducción</h2>
@@ -143,7 +205,7 @@ export const EditPlaylist = ({ match }) => {
         {showMovies ? (
         <div>
       <ul>
-      {Object.values(movieDetails).map(movie => (
+      {Object.values(filtered).map(movie => (
       <li key={movie.id}>
          <p>{movie.id} - {movie.title}</p>
           <button type="button" onClick={() => handleAddMovie(movie.id)}>add</button>

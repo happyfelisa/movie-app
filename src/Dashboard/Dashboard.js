@@ -3,9 +3,25 @@ import axios from 'axios';
 import { Playlist } from '../Playlist/Playlist';
 import './dashboard.css';
 import { useNavigate } from 'react-router-dom';
+import { useQuery, gql } from "@apollo/client";
+
+const PLAYLIST_QUERY = gql`
+query{
+  playlists{
+    id
+    name
+    movies{
+      id
+			title
+      posterPath
+    }
+  }
+}
+`;
+
 
 export const Dashboard = () => {
-  const [playlists, setPlaylists] = useState([]);
+  const [playlistss, setPlaylistss] = useState([]);
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -16,17 +32,27 @@ export const Dashboard = () => {
     navigate('/login')
   }
 
+
+  const {data} = useQuery( PLAYLIST_QUERY);
+
   useEffect(() => {
     // Actualiza la URL con tu punto de acceso a la API
-    axios.get('/playlist/playlists') 
+    /*axios.get('/playlist/playlists') 
       .then(response => {
-        setPlaylists(response.data);
+        setPlaylistss(response.data);
       })
       .catch(error => {
         console.error('Hubo un error al obtener las listas de reproducción:', error);
-      });
-  }, []);
+      });*/
+      if (data) {
+        setPlaylistss(data.playlists)
+      }
+  }, [data]);
   
+
+  console.log(playlistss);
+  console.log('DATA',data);
+
   return (
     <div className="dashboard-container">
       <h1>Mis Listas de Reproducción</h1>
@@ -35,7 +61,7 @@ export const Dashboard = () => {
         <button onClick={handleLogOut}>Salir</button>
       </div>
       <div className="playlists">
-        {playlists.map(playlist => (
+        {playlistss.map(playlist => (
           <div className="playlist-container" key={playlist.id}>
             <h2>{playlist.name}</h2>
             <div className="playlist">

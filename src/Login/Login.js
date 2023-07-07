@@ -2,6 +2,17 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './login.css';
+import { useQuery, gql } from "@apollo/client";
+
+
+const USER_QUERY = gql`
+  query{
+    userm(id: 1) {
+      id
+      username
+    }
+  }
+`;
 
 export const Login = () => {
   const [email, setEmail] = useState('');
@@ -26,6 +37,9 @@ export const Login = () => {
       setError('Usuario no válido');
     }
   };
+
+  const {data} = useQuery(USER_QUERY);
+  console.log(data.userm.username);
 
   return (
     <div className="login-container">

@@ -17,17 +17,20 @@
   
   
 .movies-wrapper {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-around;
-    overflow-x: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
 }
-
-  
+ 
 .movie-item {
     text-align: center; 
     margin: 10px; 
 }
+
+.movie-item h3{
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .button_d {
     bottom: 10px; /* ajustar según necesidad */
     right: 5px;  /* ajustar según necesidad */
