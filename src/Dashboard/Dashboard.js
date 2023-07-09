@@ -31,6 +31,7 @@ export const Dashboard = () => {
   }
 
   const handleLogOut = () => {
+    localStorage.removeItem("userId")
     navigate('/login')
   }
 
