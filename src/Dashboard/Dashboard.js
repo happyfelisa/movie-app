@@ -1,28 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Playlist } from '../Playlist/Playlist';
 import './dashboard.css';
 import { useNavigate } from 'react-router-dom';
-import { useQuery, gql } from "@apollo/client";
+import { useQuery ,gql ,useMutation } from "@apollo/client";
 
-const PLAYLIST_QUERY = gql`
+
+export const PLAYLIST_QUERY = gql`
 query{
   playlists{
     id
     name
+    userId
     movies{
       id
-			title
+      title
       posterPath
     }
   }
 }
 `;
 
-
 export const Dashboard = () => {
   const [playlistss, setPlaylistss] = useState([]);
   const navigate = useNavigate();
+  const userId = JSON.parse(localStorage.getItem("userId"))
+  console.log(userId)
 
   const handleClick = () => {
     navigate('/new-playlist')
@@ -31,6 +33,7 @@ export const Dashboard = () => {
   const handleLogOut = () => {
     navigate('/login')
   }
+
 
 
   const {data} = useQuery( PLAYLIST_QUERY);
@@ -53,6 +56,25 @@ export const Dashboard = () => {
   console.log(playlistss);
   console.log('DATA',data);
 
+  let playlistsFiltered = [];
+  if (playlistss) {
+    playlistsFiltered = playlistss.filter((pl) => pl.userId === +userId)
+  }
+
+  const DELETE_PLAYLIST_QUERY = gql`
+  mutation removePlaylist($id: String!){
+    removePlaylist(removePlaylistInput: {id: $id}) {
+      name
+    }
+  }
+  `;
+
+  const [deletePlaylist] = useMutation(DELETE_PLAYLIST_QUERY,{
+    refetchQueries: [
+      { query: PLAYLIST_QUERY },
+    ]
+  });
+
   return (
     <div className="dashboard-container">
       <h1>Mis Listas de Reproducción</h1>
@@ -61,11 +83,18 @@ export const Dashboard = () => {
         <button onClick={handleLogOut}>Salir</button>
       </div>
       <div className="playlists">
-        {playlistss.map(playlist => (
+        {playlistsFiltered.map(playlist => (
           <div className="playlist-container" key={playlist.id}>
             <h2>{playlist.name}</h2>
             <div className="playlist">
               <Playlist playlist={playlist} />
+              <button className="delete-button" onClick={() =>{
+              console.log(''+playlist.id, typeof (''+playlist.id))
+              deletePlaylist({
+                  id: ''+playlist.id,
+                })
+              }
+              }>Eliminar lista de reproducción</button>
             </div>
           </div>
         ))}

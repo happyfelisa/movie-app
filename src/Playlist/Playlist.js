@@ -4,6 +4,7 @@ import './playlist.css';
 import { Movie } from '../Movie/Movie';
 import { useNavigate } from 'react-router-dom';
 
+
 export const Playlist = ({ playlist }) => {
   const { movies } = playlist; 
   const [showDetails, setShowDetails] = useState(false);
@@ -16,6 +17,8 @@ export const Playlist = ({ playlist }) => {
   const handleEditPlaylist = (id) => {
     navigate(`/edit-playlist/${id}`);
   }
+
+
   return (
     <div className="playlist-container">
       <button className="button_d"  onClick={handleClick}>Detalles</button>

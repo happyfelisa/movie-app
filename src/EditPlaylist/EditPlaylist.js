@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
 import './editplaylist.css';
 import { useQuery, gql, useMutation } from "@apollo/client";
 
@@ -170,34 +169,6 @@ export const EditPlaylist = ({ match }) => {
       { query: PLAYLIST_DETAIL_QUERY },
     ]
   });
-
-
-  const handleUpdatePlaylist = (event) => {
-    event.preventDefault();
-
-    /*axios.put(`/playlist/${params.id}`, {
-      name: name,
-      movies: movies.map(movie => movie.id)
-    })
-      .then(response => {
-        setPlaylist(response.data);
-        navigate('/dashboard');
-      })
-      .catch(error => {
-        console.error('Hubo un error al actualizar la lista de reproducción:', error);
-      });*/
-    
-  };
-
-  const handleDeletePlaylist = () => {
-    /*axios.delete(`/playlist/${params.id}`)
-      .then(() => {
-        navigate('/dashboard');
-      })
-      .catch(error => {
-        console.error('Hubo un error al eliminar la lista de reproducción:', error);
-      });*/
-  };
 
   if (!playlist) {
     return <p>Cargando lista de reproducción...</p>;
