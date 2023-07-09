@@ -158,14 +158,18 @@ export const EditPlaylist = ({ match }) => {
   });
   
   const DELETE_PLAYLIST_QUERY = gql`
-  mutation removePlaylist($id: Float!){
-    removePlaylist(id: $id) {
+  mutation removePlaylist($id: String!){
+    removePlaylist(removePlaylistInput: {id: $id}) {
       name
     }
   }
   `;
 
-  const [deletePlaylist] = useMutation(DELETE_PLAYLIST_QUERY);
+  const [deletePlaylist] = useMutation(DELETE_PLAYLIST_QUERY,{
+    refetchQueries: [
+      { query: PLAYLIST_DETAIL_QUERY },
+    ]
+  });
 
 
   const handleUpdatePlaylist = (event) => {
@@ -219,7 +223,7 @@ export const EditPlaylist = ({ match }) => {
         variables: {
           id: +params.id,
           name: name,
-          movies: movies.map(movie => +movie.id),
+          movies: movies ? movies.map(movie => +movie.id) : [],
         }
       });
       navigate('/dashboard');
@@ -230,6 +234,8 @@ export const EditPlaylist = ({ match }) => {
     </label>
     <h3>Películas en la lista:</h3>
       <ul>
+      {movies ?
+      <div>
       {movies.map(movie => (
         <li key={movie.id}>
         <p>{movie.id} - {movieDetails[movie.id] ? movieDetails[movie.id].title : 'Cargando...'}</p>
@@ -243,6 +249,9 @@ export const EditPlaylist = ({ match }) => {
           )}
         </li>
         ))}
+        </div> 
+        : <p>Cargando datos de la pelicula...</p>
+        }
       </ul>
         <button type="button" onClick={handleMovieList}>Agregar Peliculas</button>
         {showMovies ? (
@@ -267,8 +276,9 @@ export const EditPlaylist = ({ match }) => {
       <div className="button-container">
        <button type="submit">Guardar cambios</button>
        <button className="delete-button" onClick={() =>{
+          console.log(''+playlist.id, typeof (''+playlist.id))
           deletePlaylist({
-            id: +params.id,
+            id: ''+playlist.id,
           })
           navigate('/dashboard');
        }
