@@ -63,14 +63,15 @@ export const Dashboard = () => {
   }
 
   const DELETE_PLAYLIST_QUERY = gql`
-  mutation removePlaylist($id: String!){
-    removePlaylist(removePlaylistInput: {id: $id}) {
+  mutation removePlaylist($id: ID!){
+    removePlaylist(removePlaylistInput: {id: $id}){
       name
     }
   }
   `;
 
-  const [deletePlaylist] = useMutation(DELETE_PLAYLIST_QUERY,{
+
+  const [deletePlaylist, { error }] = useMutation(DELETE_PLAYLIST_QUERY,{
     refetchQueries: [
       { query: PLAYLIST_QUERY },
     ]
@@ -89,13 +90,18 @@ export const Dashboard = () => {
             <h2>{playlist.name}</h2>
             <div className="playlist">
               <Playlist playlist={playlist} />
-              <button className="delete-button" onClick={() =>{
-              console.log(''+playlist.id, typeof (''+playlist.id))
-              deletePlaylist({
-                  id: ''+playlist.id,
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                console.log(playlist.id, typeof (playlist.id))
+                alert(`Playlist ${playlist.name} eliminada`)
+                deletePlaylist({
+                  variables: {
+                    id: +playlist.id,
+                  }
                 })
-              }
-              }>Eliminar lista de reproducción</button>
+              }}>
+                <button type='submit' >Eliminar lista de reproducción</button>
+              </form>
             </div>
           </div>
         ))}

@@ -155,20 +155,7 @@ export const EditPlaylist = ({ match }) => {
       { query: PLAYLIST_DETAIL_QUERY },
     ]
   });
-  
-  const DELETE_PLAYLIST_QUERY = gql`
-  mutation removePlaylist($id: String!){
-    removePlaylist(removePlaylistInput: {id: $id}) {
-      name
-    }
-  }
-  `;
 
-  const [deletePlaylist] = useMutation(DELETE_PLAYLIST_QUERY,{
-    refetchQueries: [
-      { query: PLAYLIST_DETAIL_QUERY },
-    ]
-  });
 
   if (!playlist) {
     return <p>Cargando lista de reproducción...</p>;
@@ -246,14 +233,6 @@ export const EditPlaylist = ({ match }) => {
        ) : null}
       <div className="button-container">
        <button type="submit">Guardar cambios</button>
-       <button className="delete-button" onClick={() =>{
-          console.log(''+playlist.id, typeof (''+playlist.id))
-          deletePlaylist({
-            id: ''+playlist.id,
-          })
-          navigate('/dashboard');
-       }
-       }>Eliminar lista de reproducción</button>
       </div>
     </form>
     </div>
